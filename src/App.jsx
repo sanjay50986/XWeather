@@ -1,70 +1,46 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const App = () => {
 
-  let userName =  "user"
-  let password = "password"
+  const [isRunning, setIsRunning] = useState(false)
+  const [elapsedTime, setElapsedTime] = useState(0)
 
-  const [user, setUser] = useState("")
-  const [pass, setPass] = useState("")
-  const [showWelcomeMsg, setShowWelcomeMsg] = useState("")
-  const [errMsg, setErrMsg] = useState("")
-  const [showInputs, setShowInputs] = useState(true)
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    if(user === userName && pass === password){
-      setShowWelcomeMsg(`Welcome, ${user}`)
-      setUser("")
-      setPass("")
-      setErrMsg("")
-      setShowInputs(false)
+  useEffect(() => {
+    let intervalId;
+    if(isRunning) {
+      intervalId = setInterval(() => {
+        setElapsedTime((prevTime) => prevTime + 1)
+      }, 1000);
     } else {
-      setErrMsg("Invalid username or password")
-      setUser("")
-      setPass("")
-      setShowWelcomeMsg("")
+      clearInterval(intervalId)
     }
+
+    return () => clearInterval(intervalId)
+  }, [isRunning])
+
+  const startStop = () => {
+    setIsRunning((prevIsRunning) => !prevIsRunning)
+  };
+
+  const reset = () => {
+    setIsRunning(false)
+    setElapsedTime(0)
   }
 
+   const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+  
+
   return (
-    <form onSubmit={handleClick}>
-      <h1>Login Page</h1>
-      {showWelcomeMsg && (
-        <p>{showWelcomeMsg}</p>
-      )}
-      {errMsg && (
-        <p>{errMsg}</p>
-      )}
-      { showInputs && ( <div>
-        <div style={{paddingTop: "10px"}}>
-      <label htmlFor="user">Username:</label>
-      <input type="text"
-        id="user"
-        name="user"
-        required
-        placeholder='username'
-        onChange={(e) => setUser(e.target.value)}
-        value={user}
-      />
-      </div>
-
-      <div style={{paddingTop: "10px"}}>
-      <label htmlFor="password">Password:</label>
-      <input type="password"
-        id="password"
-        name="password"
-        required
-        placeholder='password'
-        onChange={(e) => setPass(e.target.value)}
-        value={pass}
-      />  
-      </div>
-      <button style={{marginTop: "10px"}} type='submit'>Submit</button>
-
-      </div> )}
-      
-    </form>
+    <div>
+      <h1>Stopwatch</h1>
+      <p>Time: {formatTime(elapsedTime)}</p>
+      <button onClick={startStop}>{isRunning ? "Stop" : "Start"}</button>
+      <button onClick={reset}>Reset</button>
+    </div>
   )
 }
 
