@@ -14,7 +14,7 @@ const App = () => {
   const handleClick = (e) => {
     e.preventDefault();
     if(user === userName && pass === password){
-      setShowWelcomeMsg("Welcome, user")
+      setShowWelcomeMsg(`Welcome, ${user}`)
       setUser("")
       setPass("")
       setErrMsg("")
