@@ -1,45 +1,42 @@
 import React, { useEffect, useState } from 'react'
+import WeatherCard from './WeatherCard'
 
 const App = () => {
 
-  const [isRunning, setIsRunning] = useState(false)
-  const [elapsedTime, setElapsedTime] = useState(0)
+  const [city, setCity] = useState("")
+  const [weatherData, setWeatherData] = useState(null)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    let intervalId;
-    if(isRunning) {
-      intervalId = setInterval(() => {
-        setElapsedTime((prevTime) => prevTime + 1)
-      }, 1000);
-    } else {
-      clearInterval(intervalId)
-    }
-
-    return () => clearInterval(intervalId)
-  }, [isRunning])
-
-  const startStop = () => {
-    setIsRunning((prevIsRunning) => !prevIsRunning)
-  };
-
-  const reset = () => {
-    setIsRunning(false)
-    setElapsedTime(0)
+  const fetchWeather = async () => {
+   try {
+    setLoading(true)
+    const res = await fetch(`https://api.weatherapi.com/v1/current.json?Key=d80e9af6ee0a4aab997174510253012&q=${city}`)
+    const data = await res.json()
+    setWeatherData(data)
+    setLoading(false)
+   } catch (error) {
+      alert("Failed to fetch weather data")
+   }
   }
 
-   const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
+
+  console.log(weatherData)
   
 
   return (
-    <div>
-      <h1>Stopwatch</h1>
-      <p>Time: {formatTime(elapsedTime)}</p>
-      <button onClick={startStop}>{isRunning ? "Stop" : "Start"}</button>
-      <button onClick={reset}>Reset</button>
+
+    // d80e9af6ee0a4aab997174510253012
+    <div className='container'>
+      <div className='input-Box'>
+        <input
+         className='input' 
+         type='text' 
+         placeholder='Enter city name'
+         onChange={(e) => setCity(e.target.value)}
+         value={city} />
+        <button onClick={fetchWeather} className='search-btn'>Search</button>
+      </div>
+       {loading ? <h2 style={{paddingTop: "20px"}}>Loading...</h2> : weatherData && <WeatherCard weatherData={weatherData} />}
     </div>
   )
 }
