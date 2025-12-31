@@ -36,7 +36,7 @@ const App = () => {
          value={city} />
         <button onClick={fetchWeather} className='search-btn'>Search</button>
       </div>
-       {loading ? <h2 style={{paddingTop: "20px"}}>Loading data...</h2> : weatherData && <WeatherCard weatherData={weatherData} />}
+       {loading ? <p style={{paddingTop: "20px"}}>Loading data...</p> : weatherData && <WeatherCard weatherData={weatherData} />}
     </div>
   )
 }
